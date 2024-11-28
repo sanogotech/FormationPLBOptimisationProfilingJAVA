@@ -33,3 +33,31 @@ Dans un environnement de production Java, la gestion efficace de la mémoire et 
 12. **Cache de code** : L'augmentation de la taille du cache de code permet de stocker davantage de méthodes compilées en mémoire, réduisant ainsi les temps d'accès.
 
 Ces optimisations peuvent être combinées pour obtenir un impact significatif sur les performances de vos applications Java, notamment dans des environnements de production ou des applications nécessitant une faible latence.
+
+
+## Tuning JVM : Bonnes et Mauvaises Combinaisons de Paramètres
+
+### Introduction
+
+Le tuning des paramètres de la JVM (Java Virtual Machine) est une étape cruciale pour optimiser les performances des applications Java. Une bonne configuration des paramètres permet de maximiser l’utilisation des ressources système tout en réduisant les temps de pause (GC) et en améliorant la stabilité. Cependant, une mauvaise configuration peut entraîner des inefficacités, des plantages ou même des erreurs au démarrage.  
+
+Le tableau suivant présente cinq bonnes combinaisons de paramètres de tuning JVM et cinq mauvaises combinaisons, avec des explications pour chaque cas, afin d’illustrer les pratiques à suivre et celles à éviter.
+
+### Tableau des Bonnes et Mauvaises Combinaisons de Paramètres JVM
+
+| **Type**               | **Combinaison**                                                                                                  | **Explication**                                                                                                                                                                                                                   |
+|-------------------------|------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Bonne combinaison 1** | `-Xms512m -Xmx1024m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+HeapDumpOnOutOfMemoryError`                      | Assure une bonne gestion de la mémoire initiale/finale, active le ramasse-miettes G1GC, optimise les pauses du GC et permet de générer un dump en cas de problème de mémoire.                                                      |
+| **Bonne combinaison 2** | `-Xms256m -Xmx512m -XX:+UseZGC -XX:+UnlockExperimentalVMOptions -XX:InitiatingHeapOccupancyPercent=30`          | Active ZGC pour les applications sensibles aux latences, avec des options expérimentales pour améliorer les performances.                                                                                                         |
+| **Bonne combinaison 3** | `-Xms1g -Xmx2g -XX:+UseParallelGC -XX:ParallelGCThreads=4 -XX:+UseStringDeduplication`                         | Configure le GC parallèle avec des threads multiples et optimise la mémoire en réduisant les duplications de chaînes.                                                                                                             |
+| **Bonne combinaison 4** | `-Xms1g -Xmx2g -XX:+UseG1GC -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m`                                  | Configure G1GC avec des tailles de Metaspace appropriées, ce qui améliore les performances pour les applications avec une utilisation importante de classes.                                                                       |
+| **Bonne combinaison 5** | `-Xms2g -Xmx4g -XX:+UseG1GC -XX:SurvivorRatio=6 -XX:+AlwaysPreTouch`                                           | Ajuste le ratio des espaces Survivor et pré-alloue la mémoire pour des performances améliorées au démarrage.                                                                                                                     |
+| **Mauvaise combinaison 1** | `-Xms4g -Xmx256m -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:+UseAdaptiveSizePolicy`                   | Le maximum de mémoire (Xmx) est plus petit que le minimum (Xms), ce qui entraîne des erreurs immédiates ou une utilisation inefficace de la mémoire.                                                                              |
+| **Mauvaise combinaison 2** | `-Xms512m -Xmx1g -XX:+UseSerialGC -XX:+UseParallelGC -XX:MaxGCPauseMillis=50`                               | Active à la fois SerialGC et ParallelGC, ce qui crée une incohérence car une seule stratégie de GC peut être utilisée à la fois.                                                                                                  |
+| **Mauvaise combinaison 3** | `-Xms128m -Xmx128m -XX:+UseG1GC -XX:InitiatingHeapOccupancyPercent=90 -XX:+AlwaysPreTouch`                  | La mémoire initiale et maximale sont très petites, ce qui provoque des performances médiocres ou des plantages sur des applications gourmandes en mémoire.                                                                         |
+| **Mauvaise combinaison 4** | `-Xms2g -Xmx2g -XX:+UseParallelGC -XX:ParallelGCThreads=0 -XX:+UseStringDeduplication`                      | Définit un nombre de threads de GC à 0, ce qui empêche le GC parallèle de fonctionner correctement.                                                                                                                               |
+| **Mauvaise combinaison 5** | `-Xms1g -Xmx1g -XX:+UseG1GC -XX:MaxGCPauseMillis=-100 -XX:+UnlockExperimentalVMOptions`                     | Une valeur négative pour `MaxGCPauseMillis` est invalide et provoque une erreur au lancement.                                                                                                                                    |
+
+### Conclusion
+
+Le tuning JVM est une tâche qui demande une compréhension approfondie des besoins spécifiques de l'application et des implications des différents paramètres. Ce tableau met en lumière l'importance de tester et valider chaque configuration dans des environnements proches de la production pour éviter les mauvaises surprises.
