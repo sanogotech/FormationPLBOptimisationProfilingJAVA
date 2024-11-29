@@ -2,6 +2,10 @@
 
 ---
 
+## 0.  server.tomcat.threads.max=200
+
+server.tomcat.threads.max=200
+
 ### 1. **Optimisation 1 : Activer la compression HTTP**
 
 Cette optimisation permet de réduire la taille des réponses HTTP envoyées au client, améliorant ainsi la vitesse de chargement des pages.
