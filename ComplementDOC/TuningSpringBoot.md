@@ -1,5 +1,4 @@
 
-Voici la version simplifiée, sans les deux dernières optimisations, tout en conservant les optimisations essentielles pour la compression HTTP et la configuration du pool de connexions HikariCP :
 
 ---
 
