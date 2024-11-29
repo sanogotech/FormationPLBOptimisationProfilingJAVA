@@ -1,5 +1,4 @@
 
-Voici un TP détaillé avec un titre et la liste des prérequis pour l'intégration d'un service d'envoi d'emails avec Spring Boot en utilisant **FakeSMTP**.
 
 ---
 
